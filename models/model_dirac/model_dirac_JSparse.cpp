@@ -27,9 +27,9 @@ status = dwdx_model_dirac(t,x,NULL,user_data);
 for(inz = 0; inz<3; inz++) {
    if(amiIsNaN(J->data[inz])) {
        J->data[inz] = 0;
-       if(!udata->am_nan_JSparse) {
+       if(!udata->m_nan_JSparse) {
            warnMsgIdAndTxt("AMICI:mex:fJ:NaN","AMICI replaced a NaN value in Jacobian and replaced it by 0.0. This will not be reported again for this simulation run.");
-           udata->am_nan_JSparse = TRUE;
+           udata->m_nan_JSparse = TRUE;
        }
    }
    if(amiIsInf(J->data[inz])) {

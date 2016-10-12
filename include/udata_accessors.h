@@ -1,67 +1,67 @@
-#define qpositivex udata->am_qpositivex
+#define qpositivex udata->m_qpositivex
 
-#define plist udata->am_plist
-#define np udata->am_np
-#define ny udata->am_ny
-#define nytrue udata->am_nytrue
-#define nx udata->am_nx
-#define nxtrue udata->am_nxtrue
-#define nz udata->am_nz
-#define nztrue udata->am_nztrue
-#define ne udata->am_ne
-#define nt udata->am_nt
-#define nw udata->am_nw
-#define ndwdx udata->am_ndwdx
-#define ndwdp udata->am_ndwdp
-#define nnz udata->am_nnz
-#define nmaxevent udata->am_nmaxevent
-#define ng udata->am_ng
+#define plist udata->m_plist
+#define np udata->m_np
+#define ny udata->m_ny
+#define nytrue udata->m_nytrue
+#define nx udata->m_nx
+#define nxtrue udata->m_nxtrue
+#define nz udata->m_nz
+#define nztrue udata->m_nztrue
+#define ne udata->m_ne
+#define nt udata->m_nt
+#define nw udata->m_nw
+#define ndwdx udata->m_ndwdx
+#define ndwdp udata->m_ndwdp
+#define nnz udata->m_nnz
+#define nmaxevent udata->m_nmaxevent
+#define ng udata->m_ng
 
-#define p udata->am_p
-#define k udata->am_k
+#define p udata->m_p
+#define k udata->m_k
 
-#define tstart udata->am_tstart
-#define ts udata->am_ts
+#define tstart udata->m_tstart
+#define ts udata->m_ts
 
-#define pbar udata->am_pbar
-#define xbar udata->am_xbar
+#define pbar udata->m_pbar
+#define xbar udata->m_xbar
 
-#define idlist udata->am_idlist
+#define idlist udata->m_idlist
 
-#define sensi udata->am_sensi
-#define atol udata->am_atol
-#define rtol udata->am_rtol
-#define maxsteps udata->am_maxsteps
+#define sensi udata->m_sensi
+#define atol udata->m_atol
+#define rtol udata->m_rtol
+#define maxsteps udata->m_maxsteps
 
-#define ism udata->am_ism
-#define sensi_meth udata->am_sensi_meth
+#define ism udata->m_ism
+#define sensi_meth udata->m_sensi_meth
 
-#define linsol udata->am_linsol
-#define interpType udata->am_interpType
+#define linsol udata->m_linsol
+#define interpType udata->m_interpType
 
-#define lmm udata->am_lmm
-#define iter udata->am_iter
+#define lmm udata->m_lmm
+#define iter udata->m_iter
 
-#define stldet udata->am_stldet
+#define stldet udata->m_stldet
 
-#define ubw udata->am_ubw
-#define lbw udata->am_lbw
+#define ubw udata->m_ubw
+#define lbw udata->m_lbw
 
-#define b_x0 udata->am_bx0
-#define x0data udata->am_x0data
-#define b_sx0 udata->am_bsx0
-#define sx0data udata->am_sx0data
+#define b_x0 udata->m_bx0
+#define x0data udata->m_x0data
+#define b_sx0 udata->m_bsx0
+#define sx0data udata->m_sx0data
 
-#define ordering udata->am_ordering
+#define ordering udata->m_ordering
 
-#define tmp_J udata->am_J
-#define tmp_dxdotdp udata->am_dxdotdp
-#define w_tmp udata->am_w
-#define dwdx_tmp udata->am_dwdx
-#define dwdp_tmp udata->am_dwdp
-#define M_tmp udata->am_M
-#define dfdx_tmp udata->am_dfdx
-#define stau_tmp udata->am_stau
+#define tmp_J udata->m_J
+#define tmp_dxdotdp udata->m_dxdotdp
+#define w_tmp udata->m_w
+#define dwdx_tmp udata->m_dwdx
+#define dwdp_tmp udata->m_dwdp
+#define M_tmp udata->m_M
+#define dfdx_tmp udata->m_dfdx
+#define stau_tmp udata->m_stau
 
-#define z2event udata->am_z2event
-#define h udata->am_h
+#define z2event udata->m_z2event
+#define h udata->m_h

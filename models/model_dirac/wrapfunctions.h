@@ -15,7 +15,7 @@
 #define pi M_PI
 
 
-                void init_modeldims(UserData *udata);
+                void init_modeldims();
                 int wrap_init(void *cvode_mem, N_Vector x, N_Vector dx, realtype t);
                 int wrap_binit(void *cvode_mem, int which, N_Vector xB, N_Vector dxB, realtype t);
                 int wrap_qbinit(void *cvode_mem, int which, N_Vector qBdot);

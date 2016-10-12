@@ -25,14 +25,10 @@ int main(int argc, char **argv)
         hdffile = argv[1];
     }
     
-    UserData *udata = readSimulationUserData(hdffile);
-    if (udata == NULL) {
-        return 1;
-    }
+    UserData *udata= new UserData(hdffile);
 
     ExpData *edata = readSimulationExpData(hdffile, udata);
     if (edata == NULL) {
-        freeUserData(udata);
         return 1;
     }
 
@@ -40,15 +36,14 @@ int main(int argc, char **argv)
     ReturnData *rdata = getSimulationResults(udata, edata, &status);
     if (rdata == NULL) {
         freeExpData(edata);
-        freeUserData(udata);
         return 1;
     }
 
     processReturnData(rdata, udata);
     writeReturnData(hdffile, rdata, udata);
 
-    freeExpData(edata);
-    freeUserData(udata);
+    delete edata;
+    delete udata;
     freeReturnData(rdata);
 
     return 0;

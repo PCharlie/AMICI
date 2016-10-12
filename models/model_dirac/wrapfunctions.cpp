@@ -1,22 +1,23 @@
                 
 #include "wrapfunctions.h"
+#include <include/udata.h>
 #include <include/udata_accessors.h>
                 
-                void init_modeldims(UserData *udata){
-                   nx = 2;
-                   nxtrue = 2;
-                   ny = 1;
-                   nytrue = 1;
-                   nz = 0;
-                   nztrue = 0;
-                   ne = 1;
-                   ng = 1;
-                   nw = 0;
-                   ndwdx = 0;
-                   ndwdp = 0;
-                   nnz = 3;
-                   ubw = 0;
-                   lbw = 1;
+                void UserDataBase::init_modeldims(){
+                   m_nx = 2;
+                   m_nxtrue = 2;
+                   m_ny = 1;
+                   m_nytrue = 1;
+                   m_nz = 0;
+                   m_nztrue = 0;
+                   m_ne = 1;
+                   m_ng = 1;
+                   m_nw = 0;
+                   m_ndwdx = 0;
+                   m_ndwdp = 0;
+                   m_nnz = 3;
+                   m_ubw = 0;
+                   m_lbw = 1;
                 }
                 int wrap_init(void *cvode_mem, N_Vector x, N_Vector dx, realtype t){
                     return CVodeInit(cvode_mem, xdot_model_dirac, RCONST(t), x);

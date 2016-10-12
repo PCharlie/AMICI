@@ -36,9 +36,9 @@ switch (plist[ip]) {
 }
 for(ip = 0; ip<np*ng; ip++) {
    if(amiIsNaN(qBdot_tmp[ip])) {
-       qBdot_tmp[ip] = 0;       if(!udata->am_nan_qBdot) {
+       qBdot_tmp[ip] = 0;       if(!udata->m_nan_qBdot) {
            warnMsgIdAndTxt("AMICI:mex:fqBdot:NaN","AMICI replaced a NaN value in xBdot and replaced it by 0.0. This will not be reported again for this simulation run.");
-           udata->am_nan_qBdot = TRUE;
+           udata->m_nan_qBdot = TRUE;
        }
    }   if(amiIsInf(qBdot_tmp[ip])) {
        warnMsgIdAndTxt("AMICI:mex:fqBdot:Inf","AMICI encountered an Inf value in xBdot! Aborting simulation ... ");

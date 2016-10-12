@@ -89,9 +89,12 @@ void freeTempDataAmiMem(UserData *udata, TempData *tdata, void *ami_mem, boolean
 
 #ifdef AMICI_WITHOUT_MATLAB
 EXTERNC void initUserDataFields(UserData user_data, ReturnData *rdata, double *pstatus);
-EXTERNC  ReturnData *getSimulationResults(UserData *udata, ExpData *edata, int *pstatus);
-EXTERNC void processUserData(UserData *udata);
+EXTERNC ReturnData *getSimulationResults(UserData *udata, ExpData *edata, int *pstatus);
 EXTERNC ReturnData *initReturnData(UserData *udata, int *pstatus);
+EXTERNC void storeSimulation(const char* fileName, ReturnData *rdata);
+EXTERNC UserData *readSimulationUserData(const char* fileName);
+EXTERNC ExpData *readSimulationExpData(const char* hdffile, UserData *udata);
+EXTERNC void writeReturnData(const char* hdffile, ReturnData *rdata, UserData *udata);
 #endif /* AMICI_WITHOUT_MATLAB */
 
 #endif /* amici_h */

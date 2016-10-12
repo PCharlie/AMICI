@@ -9,6 +9,7 @@
 #include <string.h>
 #define _USE_MATH_DEFINES /* MS definition of PI and other constants */
 #include <math.h>
+#include <assert.h>
 #ifndef M_PI /* define PI if we still have no definition */
 #define M_PI 3.14159265358979323846
 #endif
@@ -16,6 +17,10 @@
 #include "wrapfunctions.h" /* user functions */
 #include <include/amici.h> /* amici functions */
 #include <include/symbolic_functions.h>
+#ifdef AMICI_WITHOUT_MATLAB
+#include <src/ami_hdf5.h>
+#endif
+
 
 #include <include/edata_accessors.h>
 #include <include/udata_accessors.h>
@@ -131,167 +136,6 @@ return(NULL); \
 
 /** return value for successful execution */
 #define AMI_SUCCESS               0
-
-
-
-#ifndef AMICI_WITHOUT_MATLAB
-UserData *setupUserData(const mxArray *prhs[]) {
-    /**
-     * @brief setupUserData extracts information from the matlab call and returns the corresponding UserData struct
-     * @param[in] prhs: pointer to the array of input arguments @type mxArray
-     * @return udata: struct containing all provided user data @type UserData
-     */
-    
-    UserData *udata; /* returned udata *struct */
-    realtype *plistdata; /* input for plist */
-    
-    int ip;
-    
-    /* User udata structure */
-    udata = new UserData();
-    if(udata==NULL) return NULL;
-    
-    init_modeldims(udata);
-    
-    /* time */
-    
-    if (!prhs[0]) {
-        errMsgIdAndTxt("AMICI:mex:tout","No time vector provided!");
-    }
-    ts = mxGetPr(prhs[0]);
-    
-    nt = (int) mxGetM(prhs[0]) * mxGetN(prhs[0]);
-    
-    /* parameters */
-    
-    if (!prhs[1]) {
-        errMsgIdAndTxt("AMICI:mex:theta","No parameter vector provided!");
-    }
-    p = mxGetPr(prhs[1]);
-    
-    /* constants */
-    
-    if (!prhs[2]) {
-        errMsgIdAndTxt("AMICI:mex:kappa","No constant vector provided!");
-    }
-    k = mxGetPr(prhs[2]);
-    
-    if (!prhs[3]) {
-        errMsgIdAndTxt("AMICI:mex:options","No options provided!");
-    }
-    
-    np = (int) mxGetM(prhs[4]) * mxGetN(prhs[4]);
-    
-    /* plist */
-    if (!prhs[4]) {
-        errMsgIdAndTxt("AMICI:mex:plist","No parameter list provided!");
-    }
-    
-    if(prhs[4]) {
-        plistdata = mxGetPr(prhs[4]);
-    }
-    
-    plist = new int[np]();
-    for (ip=0; ip<np; ip++) {
-        plist[ip] = (int)plistdata[ip];
-    }
-    
-    readOptionScalar(nmaxevent,int)
-    readOptionScalar(tstart,double)
-    readOptionScalar(atol,double)
-    readOptionScalar(rtol,double)
-    readOptionScalar(maxsteps,int)
-    readOptionScalar(lmm,int)
-    readOptionScalar(iter,int)
-    readOptionScalar(interpType,int)
-    readOptionScalar(linsol,int)
-    readOptionScalar(stldet,booleantype)
-    
-    if(mxGetProperty(prhs[3],0,"id")){ \
-        idlist = (double *) mxGetData(mxGetProperty(prhs[3],0,"id")); \
-    } else { \
-        warnMsgIdAndTxt("AMICI:mex:OPTION","Provided options are not of class amioption!"); \
-        return(NULL); \
-    }
-    
-    readOptionData(z2event)
-    readOptionData(qpositivex)
-    readOptionScalar(sensi,int)
-    readOptionScalar(ism,int)
-    readOptionScalar(sensi_meth,int)
-    readOptionScalar(ordering,int)
-    
-    /* pbar */
-    if (!prhs[5]) {
-        errMsgIdAndTxt("AMICI:mex:pbar","No parameter scales provided!");
-    }
-    
-    pbar = mxGetPr(prhs[5]);
-    
-    /* xscale */
-    if (!prhs[6]) {
-        errMsgIdAndTxt("AMICI:mex:xscale","No state scales provided!");
-    }
-    
-    xbar = mxGetPr(prhs[6]);
-    
-    /* Check, if initial states and sensitivities are passed by user or must be calculated */
-    if (!prhs[7]) {
-        b_x0 = FALSE;
-        b_sx0 = FALSE;
-    } else {
-        if(mxGetField(prhs[7], 0 ,"x0")) {
-            x0data = mxGetPr(mxGetField(prhs[7], 0 ,"x0"));
-            if ((mxGetM(mxGetField(prhs[7], 0 ,"x0")) * mxGetN(mxGetField(prhs[7], 0 ,"x0")))>0) {
-                /* check dimensions */
-                if(mxGetN(mxGetField(prhs[7], 0 ,"x0")) != 1) { errMsgIdAndTxt("AMICI:mex:x0","Number of rows in x0 field must be equal to 1!"); }
-                if(mxGetM(mxGetField(prhs[7], 0 ,"x0")) != nx) { errMsgIdAndTxt("AMICI:mex:x0","Number of columns in x0 field does not agree with number of model states!"); }
-                b_x0 = TRUE;
-            } else {
-                b_x0 = FALSE;
-            }
-        } else {
-            b_x0 = FALSE;
-        }
-        
-        if(mxGetField(prhs[7], 0 ,"sx0")) {
-            sx0data = mxGetPr(mxGetField(prhs[7], 0 ,"sx0"));
-            if ((mxGetM(mxGetField(prhs[7], 0 ,"sx0")) * mxGetN(mxGetField(prhs[7], 0 ,"sx0")))>0) {
-                /* check dimensions */
-                if(mxGetN(mxGetField(prhs[7], 0 ,"sx0")) != np) { errMsgIdAndTxt("AMICI:mex:sx0","Number of rows in sx0 field does not agree with number of model parameters!"); }
-                if(mxGetM(mxGetField(prhs[7], 0 ,"sx0")) != nx) { errMsgIdAndTxt("AMICI:mex:sx0","Number of columns in sx0 field does not agree with number of model states!"); }
-                b_sx0 = TRUE;
-            } else {
-                b_sx0 = FALSE;
-            }
-        } else {
-            b_sx0 = FALSE;
-        }
-    }
-    
-    
-    if (nx>0) {
-        /* initialise temporary jacobian storage */
-        tmp_J = SparseNewMat(nx,nx,nnz,CSC_MAT);
-        M_tmp = new realtype[nx*nx]();
-        dfdx_tmp = new realtype[nx*nx]();
-    }
-    if (sensi>0) {
-        /* initialise temporary dxdotdp storage */
-        tmp_dxdotdp = new realtype[nx*np]();
-    }
-    if (ne>0) {
-        /* initialise temporary stau storage */
-        stau_tmp = new realtype[np]();
-    }
-    
-    w_tmp = new realtype[nw]();
-    dwdx_tmp = new realtype[ndwdx]();
-    dwdp_tmp = new realtype[ndwdp]();
-    
-    return(udata);
-}
-#endif
 
 /* ------------------------------------------------------------------------------------- */
 /* ------------------------------------------------------------------------------------- */
@@ -2508,24 +2352,95 @@ freturn:
     return rdata;
 }
 #endif
-void processUserData(UserData *udata) {
-    if (nx>0) {
-        /* initialise temporary jacobian storage */
-        tmp_J = SparseNewMat(nx,nx,nnz,CSC_MAT);
-        M_tmp = new realtype[nx*nx]();
-        dfdx_tmp = new realtype[nx*nx]();
-    }
-    if (sensi>0) {
-        /* initialise temporary dxdotdp storage */
-        tmp_dxdotdp = new realtype[nx*np]();
-    }
-    if (ne>0) {
-        /* initialise temporary stau storage */
-        stau_tmp = new realtype[np]();
-    }
 
-
-    w_tmp = new realtype[nw]();
-    dwdx_tmp = new realtype[ndwdx]();
-    dwdp_tmp = new realtype[ndwdp]();
+void storeSimulation(const char* fileName, ReturnData *rdata) {
+    hsize_t dims[] = {1};
+    
+    hid_t dataspace_id = H5Screate_simple(1, dims, NULL);
+    int file_id;
+    hid_t dataset_id = H5Dcreate(file_id, "/simulations", H5T_STD_I32BE,
+                                 dataspace_id,
+                                 H5P_DEFAULT, H5P_DEFAULT,
+                                 H5P_DEFAULT);
+    hid_t status;
+    status = H5Dclose(dataset_id);
+    status = H5Sclose(dataspace_id);
 }
+
+
+ExpData *readSimulationExpData(const char* hdffile, UserData *udata) {
+    ExpData *edata = new ExpData();
+    if (edata == NULL) {
+        return(NULL);
+    }
+    
+    hid_t file_id = H5Fopen(hdffile, H5F_ACC_RDONLY, H5P_DEFAULT);
+    
+    hsize_t m, n;
+    const char* dataObject = "/data";
+    getDoubleArrayAttribute2D_HDF5(file_id, dataObject, "Y", &my, &m, &n);
+    assert(m * n == nt * ny); // TODO m, n separately
+    getDoubleArrayAttribute2D_HDF5(file_id, dataObject, "Sigma_Y", &ysigma, &m, &n);
+    assert(m * n == nt * ny);
+    if(nz) {
+        getDoubleArrayAttribute2D_HDF5(file_id, dataObject, "Z", &mz, &m, &n);
+        assert(m * n == nt * nz);
+        getDoubleArrayAttribute2D_HDF5(file_id, dataObject, "Sigma_Z", &zsigma, &m, &n);
+        assert(m * n == nt * nz);
+    } else {
+        mz = 0;
+        zsigma = 0;
+    }
+    H5Fclose(file_id);
+    
+    return(edata);
+}
+
+void writeReturnData(const char* hdffile, ReturnData *rdata, UserData *udata) {
+    hid_t file_id = H5Fopen(hdffile, H5F_ACC_RDWR, H5P_DEFAULT);
+    
+    const char* solutionsObject = "/solutions";
+    
+    hid_t dataset;
+    
+    if(H5Lexists(file_id, solutionsObject, H5P_DEFAULT)) {
+        printf("INFO: 'solutions' section already exists. overwriting.\n");
+        dataset = H5Dopen2(file_id, solutionsObject, H5P_DEFAULT);
+    } else {
+        hsize_t dim [] = {1};
+        hid_t dataspace = H5Screate_simple (1, dim, NULL);
+        dataset = H5Dcreate(file_id, solutionsObject, H5T_IEEE_F64LE, dataspace, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    }
+    
+    H5LTset_attribute_double(file_id, solutionsObject, "t", tsdata, nt);
+    H5LTset_attribute_double(file_id, solutionsObject, "xdot", xdotdata, nx);
+    H5LTset_attribute_double(file_id, solutionsObject, "llh", llhdata, 1);
+    H5LTset_attribute_double(file_id, solutionsObject, "sllh", sllhdata, np);
+    
+    // are double, but should write as int:
+    setAttributeIntFromDouble_HDF5(file_id, solutionsObject, "numsteps", numstepsdata, nt);
+    setAttributeIntFromDouble_HDF5(file_id, solutionsObject, "numrhsevals", numrhsevalsdata, nt);
+    setAttributeIntFromDouble_HDF5(file_id, solutionsObject, "order", orderdata, nt);
+    if(numstepsSdata)
+        setAttributeIntFromDouble_HDF5(file_id, solutionsObject, "numstepsS", numstepsSdata, nt);
+    if(numrhsevalsSdata)
+        setAttributeIntFromDouble_HDF5(file_id, solutionsObject, "numrhsevalsS", numrhsevalsSdata, nt);
+    
+    createAndWriteDouble2DAttribute_HDF5(dataset, "J", Jdata, nx, nx);
+    createAndWriteDouble2DAttribute_HDF5(dataset, "x", xdata, nt, nx);
+    createAndWriteDouble2DAttribute_HDF5(dataset, "y", ydata, nt, ny);
+    createAndWriteDouble2DAttribute_HDF5(dataset, "sigmay", sigmaydata, nt, ny);
+    
+    if(sxdata)
+        createAndWriteDouble3DAttribute_HDF5(dataset, "sx", sxdata, nt, nx, np);
+    if(sydata)
+        createAndWriteDouble3DAttribute_HDF5(dataset, "sy", sydata, nt, ny, np);
+    if(ssigmaydata)
+        createAndWriteDouble3DAttribute_HDF5(dataset, "ssigmay", ssigmaydata, nt, ny, np);
+    // TODO: sssigmaz
+    
+    H5Fclose(file_id);
+    
+}
+
+

@@ -18,9 +18,9 @@ status = w_model_dirac(t,x,NULL,user_data);
 for(ix = 0; ix<2; ix++) {
    if(amiIsNaN(xdot_tmp[ix])) {
        xdot_tmp[ix] = 0;
-       if(!udata->am_nan_xdot) {
+       if(!udata->m_nan_xdot) {
            warnMsgIdAndTxt("AMICI:mex:fxdot:NaN","AMICI replaced a NaN value in xdot and replaced it by 0.0. This will not be reported again for this simulation run.");
-           udata->am_nan_xdot = TRUE;
+           udata->m_nan_xdot = TRUE;
        }
    }
    if(amiIsInf(xdot_tmp[ix])) {
