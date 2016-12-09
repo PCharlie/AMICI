@@ -8,7 +8,7 @@ set(AMICI_DIR "${CMAKE_SOURCE_DIR}")
 set(MODEL_DIR "${AMICI_DIR}/models/model_dirac")
 set(SUITESPARSE_DIR "${AMICI_DIR}/SuiteSparse/")
 set(SUITESPARSE_LIB_DIR "${AMICI_DIR}/SuiteSparse/lib")
-set(SUNDIALS_LIB_DIR "${AMICI_DIR}/build/sundials/lib")
+set(SUNDIALS_LIB_DIR "${AMICI_DIR}/sundials/build/lib")
 
 set(SRC_LIST
 ${MODEL_DIR}/main.cpp
@@ -99,6 +99,9 @@ endif(ZLIB_FOUND)
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
+message(STATUS "sundials: ${SUNDIALS_LIB_DIR}")
+message(STATUS "suitesparse: ${SUITESPARSE_LIB_DIR}")
+message(STATUS "${LIBS}")
 target_link_libraries(${PROJECT_NAME} ${LIBS} "-lpthread -L${SUNDIALS_LIB_DIR} -lsundials_cvodes -lsundials_nvecserial -L${SUITESPARSE_LIB_DIR}  -lklu -lbtf -lamd -lcolamd -lsuitesparseconfig"
 "-lm" 
 )

@@ -28,7 +28,7 @@ make library
 mkdir ./../../sundials/build/
 cd ./../../sundials/build/
 
-cmake -DCMAKE_INSTALL_PREFIX="./../../build/sundials" \
+cmake -DCMAKE_INSTALL_PREFIX="$./../../build/" \
 -DBUILD_ARKODE=OFF \
 -DBUILD_CVODE=OFF \
 -DBUILD_IDA=OFF \
@@ -47,6 +47,13 @@ make install
 
 cd ../../
 
-cmake CMakeLists.txt
+cmake -DCMAKE_BUILD_TYPE=Debug CMakeLists.txt
 make
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	install_name_tool -change libsundials_cvodes.2.dylib $(pwd)/sundials/build/lib/libsundials_cvodes.2.dylib model_dirac
+	install_name_tool -change libsundials_nvecserial.0.dylib $(pwd)/sundials/build/lib/libsundials_nvecserial.0.dylib model_dirac
+fi
+
+
 #cmake -f ./../models/model_dirac/CMakeLists.txt
