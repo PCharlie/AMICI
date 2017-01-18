@@ -19,6 +19,8 @@ classdef amised < handle
         varsym = sym([]);
         datasym = sym([]);
         
+        javaobj = org.sedml.libsedml.SedDocument;
+        
     end
     
     properties ( GetAccess = 'public', SetAccess = 'public' )
@@ -28,13 +30,19 @@ classdef amised < handle
     methods
         function ASED = amised(sedname)
 
+            ASED = ASED.importSEDML(sedname);
+            
+            ASED.modelname = char(ASED.javaobj.getName);
+            
             % get models
-            for imodel = 1:length(ASED.sedml.listOfModels.model)
+            for imodel = 1:length(ASED.javaobj.getListOfModels.getNumModels)
                 % get the model sbml
                 % check if this is a biomodels model
-                if(length(ASED.sedml.listOfModels.model{imodel}.Attributes.source>=23))
-                    if(strcmp(ASED.sedml.listOfModels.model{imodel}.Attributes.source,ASED.modelname))
-                        ASED.model(imodel) = ASED.model(find(strcmp(ASED.sedml.listOfModels.model{imodel}.Attributes.source,ASED.modelname)));
+                
+                source = char(ASED.javaobj.getModel(imodel-1).getSource);
+                if(length(source)>=23)
+                    if(strcmp(source,ASED.modelname))
+                        ASED.model(imodel) = ASED.model(find(strcmp(source,ASED.modelname)));
                         ASED.modelname{imodel} = ASED.sedml.listOfModels.model{imodel}.Attributes.id;
                         ASED.model(imodel).sym.y = sym([]);
                         ASED.outputcount(imodel) = 0;
@@ -46,20 +54,18 @@ classdef amised < handle
                         modelxml = ASED.sedml.listOfModels.model{imodel}.Attributes.source;
                     end
                 else
-                    modelxml = ASED.sedml.listOfModels.model{imodel}.Attributes.source;
+                    modelxml = source;
                 end
-                modelxml = strrep(modelxml,'.xml','');
+                modelxml = fullfile(fileparts(sedname),strrep(modelxml,'.xml',''));
                 % convert model sbml to amici
-                SBML2AMICI(modelxml,ASED.sedml.listOfModels.model{imodel}.Attributes.id);
-                eval(['model = ' ASED.sedml.listOfModels.model{imodel}.Attributes.id '_syms();'])
-                if(~isfield(model,'event'))
-                    model.event = [];
-                end
-                ASED.model(imodel) = model;
+                
+                model_id = char(ASED.javaobj.getModel(0).getId);
+                SBML2AMICI(modelxml, [ASED.modelname '_' model_id]);
+                eval(['model = ' ASED.modelname '_' model_id '_syms();'])
                 % clear output;
                 ASED.model(imodel).sym.y = sym([]);
                 ASED.outputcount(imodel) = 0;
-                ASED.modelname{imodel} = ASED.sedml.listOfModels.model{imodel}.Attributes.id;
+                ASED.modelname{imodel} = model_id;
             end
             % apply changes
             if(isfield(ASED.sedml,'listOfChanges'))
@@ -109,6 +115,15 @@ classdef amised < handle
 
             
         end
+        
+        function ASED = importSEDML(this,sedname)
+            
+            loadsedml;
+            import org.sedml.libsedml.*
+            ASED.javaobj = libsedml.readSedML(sedname);
+            
+        end
+        
     end
 end
 
