@@ -36,7 +36,7 @@ try
     idx_url = strfind(str,'https://github.com');
     url = str(idx_url:end);
 catch
-    commit_hash = '#';
+    commit_hash = '$Id$';
     branch = 'unknown branch';
     url = 'unknown repository';
 end
