@@ -29,6 +29,7 @@
 #define AMI_ONE_STEP              2
 
 #define AMI_VERSION "$Format:%h$"
+#define AMICI_H_VERSION "$Id$"
 
 void *setupAMI(int *status, UserData *udata, TempData *tdata);
 void setupAMIB(int *status, void *ami_mem, UserData *udata, TempData *tdata);
