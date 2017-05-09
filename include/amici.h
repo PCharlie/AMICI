@@ -28,6 +28,8 @@
 #define AMI_NORMAL                1
 #define AMI_ONE_STEP              2
 
+#define AMI_VERSION "$Id$"
+
 void *setupAMI(int *status, UserData *udata, TempData *tdata);
 void setupAMIB(int *status, void *ami_mem, UserData *udata, TempData *tdata);
 
